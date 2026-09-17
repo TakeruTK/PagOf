@@ -1,0 +1,9 @@
+.git
+.next
+.sites-runtime
+.vinext
+.wrangler
+dist
+node_modules
+npm-debug.log*
+dev-server.*.log

@@ -39,7 +39,8 @@ export function sameOrigin(request: Request) {
   return request.headers.get('origin') === new URL(request.url).origin;
 }
 function sessionCookie(token: string, maxAge: number) {
-  return `${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAge}${import.meta.env.DEV ? '' : '; Secure'}`;
+  const secure = env.SESSION_COOKIE_SECURE === 'false' ? '' : import.meta.env.DEV ? '' : '; Secure';
+  return `${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAge}${secure}`;
 }
 export async function createSession() {
   const token = hex(crypto.getRandomValues(new Uint8Array(32)).buffer);

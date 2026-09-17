@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8787:8787"
+    environment:
+      ADMIN_EMAILS: ""
+      ADMIN_USERNAME: Admin
+      ADMIN_PASSWORD_HASH: pbkdf2-sha256:100000:414fe192b55a29d4ff6e8c1e11b5fac2:34648efd8c27d566b2ded38ce0ae3079be8ebdca5ff08df5c660fe768f3c294f
+      SESSION_COOKIE_SECURE: "false"
+    restart: unless-stopped
