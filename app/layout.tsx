@@ -56,7 +56,14 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
-  icons: { icon: '/favicon.svg' },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: '/favicon-192.png',
+  },
 };
 
 const structuredData = {
@@ -67,7 +74,7 @@ const structuredData = {
   url: siteUrl,
   description,
   image: `${siteUrl}/images/ring-fabric.jpg`,
-  logo: `${siteUrl}/favicon.svg`,
+  logo: `${siteUrl}/favicon-512.png`,
   sameAs: ['https://www.instagram.com/carolinaalfaroorfebreria/'],
   priceRange: '$$',
   address: {

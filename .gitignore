@@ -48,3 +48,6 @@ next-env.d.ts
 !.env.example
 *.tsbuildinfo
 
+
+# Archivos temporales de extracción de marca (borrar cuando quieras)
+public/brand/_to_delete/

@@ -1,7 +1,7 @@
 import { database, protect, failure } from '@/lib/server';
 import { pieceSchema } from '@/lib/pieces';
 export const dynamic='force-dynamic';
-const parseRow=(r:any)=>({...r,images:JSON.parse(r.images)});
+const parseRow=(r:Record<string,unknown>)=>({...r,images:JSON.parse(r.images as string)});
 export async function GET(request:Request){try{const admin=new URL(request.url).searchParams.has('admin');if(admin){const denied=await protect(request);if(denied)return denied;}const sql=admin?'SELECT * FROM pieces ORDER BY updated DESC':"SELECT * FROM pieces WHERE status = 'Publicado' ORDER BY updated DESC";const {results}=await database().prepare(sql).all();return Response.json(results.map(parseRow),{headers:{'Cache-Control':'no-store'}});}catch(e){return failure(e);}}
 export async function POST(request:Request){return save(request,false);}
 export async function PUT(request:Request){return save(request,true);}

@@ -12,6 +12,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored tooling / generated / build output that isn't site source:
+    ".sites-runtime/**",
+    ".wrangler/**",
+    ".vinext/**",
+    "dist/**",
+    "vendor/**",
+    "work/**",
+    "examples/**",
   ]),
   {
     files: ["components/ui/**/*.{ts,tsx}", "hooks/use-mobile.ts"],
