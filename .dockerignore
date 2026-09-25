@@ -7,3 +7,12 @@ dist
 node_modules
 npm-debug.log*
 dev-server.*.log
+
+# Secrets — never bake these into an image layer.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+.dev.vars

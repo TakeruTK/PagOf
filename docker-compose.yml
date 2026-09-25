@@ -1,11 +1,39 @@
 services:
   app:
     build: .
+    # Never publish on 0.0.0.0: only the local reverse proxy (Caddy/Nginx on this
+    # same host, terminating TLS) should be able to reach the app.
     ports:
-      - "8787:8787"
+      - "127.0.0.1:8787:8787"
     environment:
-      ADMIN_EMAILS: ""
-      ADMIN_USERNAME: Admin
-      ADMIN_PASSWORD_HASH: pbkdf2-sha256:100000:414fe192b55a29d4ff6e8c1e11b5fac2:34648efd8c27d566b2ded38ce0ae3079be8ebdca5ff08df5c660fe768f3c294f
-      SESSION_COOKIE_SECURE: "false"
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-Admin}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?Set ADMIN_PASSWORD_HASH in a local, untracked .env file — see scripts/generate-admin-hash.mjs}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-true}
+      NODE_ENV: production
+    volumes:
+      # D1 (SQLite) and R2 (photo) data live here. Without this volume, every
+      # container recreation permanently deletes all pieces/photos/sessions.
+      - wrangler-state:/app/.wrangler/state
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 512m
+    cpus: "1.0"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
     restart: unless-stopped
+
+volumes:
+  wrangler-state:

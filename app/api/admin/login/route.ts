@@ -4,7 +4,7 @@ export async function POST(request: Request) {
   const headers = {'Cache-Control':'no-store'};
   if (!sameOrigin(request)) return Response.json({error:'Solicitud no permitida.'}, {status:403,headers});
   try {
-    if (!authConfigured()) return Response.json({error:'El acceso al taller todavía no está configurado.'}, {status:503,headers});
+    if (!await authConfigured()) return Response.json({error:'El acceso al taller todavía no está configurado.'}, {status:503,headers});
     const body = await request.text();
     if (body.length > 2048) return Response.json({error:'Datos de acceso inválidos.'}, {status:400,headers});
     let input;
