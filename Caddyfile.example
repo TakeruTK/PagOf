@@ -1,0 +1,15 @@
+# Reverse proxy for the self-hosted Contabo deployment.
+#
+# 1. Copy this file to `Caddyfile` next to docker-compose.yml.
+# 2. Replace the placeholder domain below with the real one once it's pointed
+#    at this server's IP (an A/AAAA DNS record is required for Caddy to get a
+#    TLS certificate automatically — it will retry until the DNS resolves).
+# 3. Add the `caddy` service from docker-compose.caddy.example.yml to your
+#    docker-compose.yml (or docker-compose.override.yml).
+#
+# tienda-carolina-alfaro.cl {
+subdominio-de-ejemplo.tudominio.cl {
+	encode gzip
+
+	reverse_proxy app:8787
+}

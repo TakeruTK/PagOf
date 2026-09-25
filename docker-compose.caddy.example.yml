@@ -1,0 +1,30 @@
+# Optional Caddy reverse proxy, added on top of docker-compose.yml once the
+# real domain is known. Usage:
+#
+#   cp Caddyfile.example Caddyfile   # then edit the domain inside
+#   docker compose -f docker-compose.yml -f docker-compose.caddy.example.yml up -d
+#
+# This removes the app's own port from the host entirely (Caddy is the only
+# thing exposed publicly) and reaches it over the internal Docker network by
+# service name instead of 127.0.0.1.
+
+services:
+  app:
+    ports: !reset []
+
+  caddy:
+    image: caddy:2-alpine
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    restart: unless-stopped
+
+volumes:
+  caddy-data:
+  caddy-config:
