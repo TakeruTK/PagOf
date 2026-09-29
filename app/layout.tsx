@@ -3,17 +3,24 @@ import './globals.css';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://caorfebreria.cl';
 const siteName = 'Carolina Alfaro Orfebrería';
-const description = 'Orfebrería de autor en Chile: piezas únicas, trabajos por encargo, anillos, aros, collares y joyería artesanal en plata.';
+const alternateNames = ['CA Orfebrería', 'Carolina Orfebrería', 'CAOrfebrería'];
+const description = 'Carolina Orfebrería (CA Orfebrería): joyería artesanal chilena hecha a mano en plata. Piezas únicas, anillos, aros, collares y trabajos por encargo en Chile.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${siteName} | Joyería artesanal en Chile`,
+    default: 'Carolina Orfebrería | CA Orfebrería — Joyería artesanal chilena',
     template: `%s | ${siteName}`,
   },
   description,
   applicationName: siteName,
   keywords: [
+    'Carolina Orfebrería',
+    'CA Orfebrería',
+    'CAOrfebrería',
+    'Carolina Alfaro Orfebrería',
+    'joyería artesanal chilena',
+    'orfebrería artesanal chilena',
     'orfebrería en Chile',
     'orfebrería Lampa',
     'orfebrería Batuco',
@@ -23,7 +30,6 @@ export const metadata: Metadata = {
     'aros artesanales',
     'collares artesanales',
     'joyería por encargo',
-    'Carolina Alfaro Orfebrería',
   ],
   authors: [{ name: 'Carolina Alfaro' }],
   creator: 'Carolina Alfaro',
@@ -35,13 +41,13 @@ export const metadata: Metadata = {
     locale: 'es_CL',
     url: '/',
     siteName,
-    title: `${siteName} | Joyería artesanal en Chile`,
+    title: 'Carolina Orfebrería | CA Orfebrería — Joyería artesanal chilena',
     description,
     images: [{ url: '/images/ring-fabric.jpg', width: 1200, height: 1500, alt: 'Anillo artesanal sobre tela' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${siteName} | Joyería artesanal en Chile`,
+    title: 'Carolina Orfebrería | CA Orfebrería — Joyería artesanal chilena',
     description,
     images: ['/images/ring-fabric.jpg'],
   },
@@ -71,6 +77,7 @@ const structuredData = {
   '@type': ['JewelryStore', 'LocalBusiness'],
   '@id': `${siteUrl}/#carolina-alfaro-orfebreria`,
   name: siteName,
+  alternateName: alternateNames,
   url: siteUrl,
   description,
   image: `${siteUrl}/images/ring-fabric.jpg`,
