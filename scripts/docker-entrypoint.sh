@@ -20,6 +20,19 @@ EOF
 write_vars .dev.vars
 write_vars dist/server/.dev.vars
 
+# Cloudflare's static asset handler defaults to stripping .html from URLs
+# (redirecting /file.html -> /file), which breaks things that need the exact
+# .html URL to resolve with no redirect — e.g. Google Search Console's
+# "HTML file" site-verification check. vinext doesn't expose this as a build
+# option, so patch the generated config directly before the server starts.
+node -e "
+const fs = require('node:fs');
+const path = 'dist/server/wrangler.json';
+const config = JSON.parse(fs.readFileSync(path, 'utf8'));
+config.assets = { ...config.assets, html_handling: 'none' };
+fs.writeFileSync(path, JSON.stringify(config));
+"
+
 if [ ! -f .wrangler/state/.migrated ]; then
   node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_grey_champions.sql
   node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0001_common_shriek.sql
