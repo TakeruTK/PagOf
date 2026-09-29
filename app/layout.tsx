@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://carolinaalfaroorfebreria.cl';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://caorfebreria.cl';
 const siteName = 'Carolina Alfaro Orfebrería';
 const description = 'Orfebrería de autor en Chile: piezas únicas, trabajos por encargo, anillos, aros, collares y joyería artesanal en plata.';
 
