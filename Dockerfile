@@ -22,21 +22,21 @@ ENV PORT=8787 \
     WRANGLER_SEND_METRICS=false \
     WRANGLER_WRITE_LOGS=false
 
-RUN groupadd --system --gid 1000 app \
-    && useradd --system --uid 1000 --gid app --home-dir /app --shell /usr/sbin/nologin app
-
 COPY --from=build /app/package.json /app/package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/drizzle ./drizzle
 COPY --from=build /app/scripts ./scripts
 
-# Pre-create writable paths and hand them to the non-root user. When the named
-# volume for .wrangler/state is first mounted, Docker copies this ownership in.
+# Pre-create writable paths and hand them to the non-root user. The official
+# node image already ships a non-root "node" user (uid/gid 1000) — reuse it
+# rather than adding a second uid 1000 account, which collides on build.
+# When the named volume for .wrangler/state is first mounted, Docker copies
+# this ownership in.
 RUN mkdir -p .wrangler/state .sites-runtime dist/server \
-    && chown -R app:app /app
+    && chown -R node:node /app
 
-USER app
+USER node
 
 EXPOSE 8787
 
