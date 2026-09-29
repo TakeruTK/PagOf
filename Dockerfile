@@ -33,10 +33,12 @@ COPY --from=build --chown=node:node /app/dist ./dist
 COPY --from=build --chown=node:node /app/drizzle ./drizzle
 COPY --from=build --chown=node:node /app/scripts ./scripts
 
-# Pre-create writable paths for the non-root user. When the named volume for
-# .wrangler/state is first mounted, Docker copies this ownership in.
+# Pre-create writable paths for the non-root user, including /app itself
+# (the entrypoint writes .dev.vars directly into the working directory).
+# When the named volume for .wrangler/state is first mounted, Docker copies
+# this ownership in.
 RUN mkdir -p .wrangler/state .sites-runtime dist/server \
-    && chown node:node .wrangler .wrangler/state .sites-runtime dist/server
+    && chown node:node /app .wrangler .wrangler/state .sites-runtime dist dist/server
 
 USER node
 
