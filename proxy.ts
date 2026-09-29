@@ -24,6 +24,8 @@ export function proxy(request: NextRequest) {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
   response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+  response.headers.set('Cross-Origin-Resource-Policy', 'same-origin');
 
   if (pathname === '/admin' || pathname.startsWith('/admin/') || pathname === '/api' || pathname.startsWith('/api/')) {
     response.headers.set('Cache-Control', 'no-store');
