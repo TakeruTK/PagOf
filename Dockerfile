@@ -22,19 +22,21 @@ ENV PORT=8787 \
     WRANGLER_SEND_METRICS=false \
     WRANGLER_WRITE_LOGS=false
 
-COPY --from=build /app/package.json /app/package-lock.json ./
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/drizzle ./drizzle
-COPY --from=build /app/scripts ./scripts
+# The official node image already ships a non-root "node" user (uid/gid 1000)
+# — reuse it rather than adding a second uid 1000 account, which collides on
+# build. --chown sets ownership during the copy itself (one pass) instead of
+# a separate recursive chown afterward, which was taking 3-5 minutes alone on
+# this project's node_modules tree.
+COPY --from=build --chown=node:node /app/package.json /app/package-lock.json ./
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/dist ./dist
+COPY --from=build --chown=node:node /app/drizzle ./drizzle
+COPY --from=build --chown=node:node /app/scripts ./scripts
 
-# Pre-create writable paths and hand them to the non-root user. The official
-# node image already ships a non-root "node" user (uid/gid 1000) — reuse it
-# rather than adding a second uid 1000 account, which collides on build.
-# When the named volume for .wrangler/state is first mounted, Docker copies
-# this ownership in.
+# Pre-create writable paths for the non-root user. When the named volume for
+# .wrangler/state is first mounted, Docker copies this ownership in.
 RUN mkdir -p .wrangler/state .sites-runtime dist/server \
-    && chown -R node:node /app
+    && chown node:node .wrangler .wrangler/state .sites-runtime dist/server
 
 USER node
 
