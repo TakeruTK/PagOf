@@ -97,9 +97,9 @@ const structuredData = {
     { '@type': 'Country', name: 'Chile' },
   ],
   makesOffer: [
-    { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Anillos artesanales' } },
-    { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Aros artesanales' } },
-    { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Collares artesanales' } },
+    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Anillos artesanales' } },
+    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Aros artesanales' } },
+    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Collares artesanales' } },
     { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Joyería artesanal por encargo' } },
   ],
 };
