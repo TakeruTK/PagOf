@@ -43,4 +43,37 @@ if [ ! -f .wrangler/state/.migrated-0002 ]; then
   touch .wrangler/state/.migrated-0002
 fi
 
-exec node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 0.0.0.0 --port "${PORT:-8787}" --inspector-port 0
+node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 0.0.0.0 --port "${PORT:-8787}" --inspector-port 0 &
+SERVER_PID=$!
+
+# wrangler dev (workerd) is a dev-mode runtime: it has been observed to crash
+# internally (kj::Exception, "Connection reset by peer") after days of real
+# internet traffic, and the crashed process can keep running without ever
+# answering requests again — Docker's own `restart: unless-stopped` policy
+# only triggers on process *exit*, so a hung-but-alive process is invisible
+# to it. This loop is the fix: once the server has had time to start, if it
+# stops answering its own healthcheck for ~30s straight, kill it so the
+# container exits and Docker restarts it fresh, instead of silently serving
+# nothing for hours or days.
+(
+  sleep 30
+  fails=0
+  while kill -0 "$SERVER_PID" 2>/dev/null; do
+    sleep 10
+    if node -e "fetch('http://127.0.0.1:${PORT:-8787}/api/health',{signal:AbortSignal.timeout(5000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" 2>/dev/null; then
+      fails=0
+    else
+      fails=$((fails + 1))
+      echo "$(date -Iseconds) health check failed ($fails/3)" >&2
+    fi
+    if [ "$fails" -ge 3 ]; then
+      echo "$(date -Iseconds) health check failed 3 times in a row, restarting" >&2
+      # SIGKILL, not the default TERM: a genuinely hung process (not just slow)
+      # may never get scheduled to handle TERM, so this must be unconditional.
+      kill -9 "$SERVER_PID" 2>/dev/null || true
+      break
+    fi
+  done
+) &
+
+wait "$SERVER_PID"
